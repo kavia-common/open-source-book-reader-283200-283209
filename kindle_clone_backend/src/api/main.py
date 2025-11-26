@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.core.config import get_config  # ensure config is loaded and available
+from src.api.routers import router as api_router
 
 app = FastAPI(
     title="Kindle Clone Backend",
@@ -9,6 +10,9 @@ app = FastAPI(
     version="0.1.0",
     openapi_tags=[
         {"name": "System", "description": "System and health endpoints"},
+        {"name": "Books", "description": "Search and retrieve book details"},
+        {"name": "Downloads", "description": "Download job management"},
+        {"name": "Content", "description": "Serve normalized book content"},
         {"name": "Cache", "description": "Cache and content storage operations"},
     ],
 )
@@ -25,6 +29,5 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/", tags=["System"], summary="Health Check", description="Simple health check endpoint that returns service status.")
-def health_check():
-    return {"message": "Healthy"}
+# Mount routers
+app.include_router(api_router)
