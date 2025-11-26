@@ -1,7 +1,21 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-app = FastAPI()
+from src.core.config import get_config  # ensure config is loaded and available
+
+app = FastAPI(
+    title="Kindle Clone Backend",
+    description="Backend API for managing book retrieval, library, bookmarks, and content serving.",
+    version="0.1.0",
+    openapi_tags=[
+        {"name": "System", "description": "System and health endpoints"},
+        {"name": "Cache", "description": "Cache and content storage operations"},
+    ],
+)
+
+# Read config to initialize content root directory on startup
+_cfg = get_config()
+# The cache module will create directories lazily when used.
 
 app.add_middleware(
     CORSMiddleware,
@@ -11,6 +25,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/")
+@app.get("/", tags=["System"], summary="Health Check", description="Simple health check endpoint that returns service status.")
 def health_check():
     return {"message": "Healthy"}
